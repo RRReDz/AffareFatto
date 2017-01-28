@@ -200,14 +200,15 @@
 			success: function(response) {
 				if (response[0].campo == "true")
 					window.location = 'ricerca.php';
-				else 
+				else{ 
 					for (var i = 0, len = response.length; i < len; i++) {
 						$("#" + response[i].campo).children("span").remove();
 						$("#" + response[i].campo).append("<span class='help-inline'><font color='red'>" + response[i].valore + "</font></span>");	
-						}
+					}
 				}
-			});
-		});	
+			}
+		});
+	});	
 
 	// Invio dati con ajax (REGISTRAZIONE)
 	$("#signup").submit(function(event) {
