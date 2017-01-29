@@ -1,4 +1,6 @@
 <?php
+	require __DIR__ . '/vendor/autoload.php';
+
 	$response = array();
 	
 	if (!isset($_POST['nome']) || !isset($_POST['cognome']) || !isset($_POST['email']) || !isset($_POST['username']) || !isset($_POST['password']) || !isset($_POST['password_check']))
@@ -22,7 +24,7 @@
 	if (!empty($response)) {
 		echo json_encode($response);
 		die();
-		}
+	}
 	
 	//Apertura database
 	include 'db_connect.php';
@@ -35,7 +37,8 @@
 		$response[] = array('campo'=>'email','valore'=>'Inserisci una nuova mail');
 		echo json_encode($response);
 		die();
-		}
+	}
+	
 	// Controllo presenza Nome Utente nel database
 	$strSQL = "SELECT * FROM Autenticazione WHERE NomeUtente LIKE '".$_POST['username']."' LIMIT 1";
 	$query_result = mysql_query($strSQL);
@@ -44,19 +47,20 @@
 		$response[] = array('campo'=>'username','valore'=>'Nome utente gi&#224; esistente.');
 		echo json_encode($response);
 		die();
-		}
+	}
 	
 	//Inserimento dati utente
 	$strSQL = "INSERT Utente (Cognome, Nome, EMail, Immagine) ";
 	$strSQL .= "VALUES ('".trim(ucfirst($_POST['cognome']))."', '".trim(ucfirst($_POST['nome']))."', '".trim($_POST['email'])."', 'default.jpg')";
 	mysql_query($strSQL);
+	
 	//Controllo inserimento dati utente
 	if (mysql_affected_rows() == -1) {
 		mysql_close($db);
 		$response[] = array('campo'=>'output', 'valore'=>'false');
 		echo json_encode($response);
 		die();
-		}
+	}
 	
 	// Inserimento dati autenticazione
 	$strSQL = "SELECT IDUtente FROM Utente WHERE EMail = '".$_POST['email']."'";
@@ -68,17 +72,34 @@
 	$strSQL = "INSERT Autenticazione (IDUtente, NomeUtente, Password, Chiave_Conferma) VALUES (".$utente['IDUtente'].", '".trim($_POST['username'])."', '".$sha1_pass."', '".$chiave_email."')";
 	mysql_query($strSQL);
 	
-	// Invio email per conferma account
-	$to = $_POST['email'];
-	$subject = "Affare Fatto conferma account";
-	$message = "Per confermare il tuo account clicca su questo link ";
-	$message .= "http://zfh18pos.altervista.org/account_confirm.php?key=".$chiave_email;
-	if (!mail($to, $subject, $message)) {
+	$api_keys = include('api_keys.php');
+
+	$mail = new PHPMailer;
+	
+	//$mail->SMTPDebug = 3;                               		// Enable verbose debug output
+
+	$mail->isSMTP();                                      		// Set mailer to use SMTP
+	$mail->Host = 'in-v3.mailjet.com';  			      		// Specify main and backup SMTP servers
+	$mail->SMTPAuth = true;                               		// Enable SMTP authentication
+	$mail->Username = $api_keys->mailjet_keys['username'];      // SMTP username
+	$mail->Password = $api_keys->mailjet_keys['password'];      // SMTP password
+	$mail->SMTPSecure = 'tls';                            		// Enable TLS encryption, `ssl` also accepted
+	$mail->Port = 587;                                    		// TCP port to connect to
+
+	$mail->isHTML(true); 
+	
+	$mail->setFrom('riccardo.rossi@affarefatto.tk', 'Riccardo Rossi');
+	$mail->addAddress($_POST['email']);
+
+	$mail->Subject = 'Affare Fatto conferma account';
+	$mail->Body    = 'Benvenuto in Affare Fatto! <br><br> Per confermare il tuo account clicca su questo link http://affarefatto.tk/account_confirm.php?key='.$chiave_email;
+		
+	if(!$mail->send()) {
 		mysql_close($db);
 		$response[] = array('campo'=>'output', 'valore'=>'Errore nell\'invio della mail.');
 		echo json_encode($response);
 		die();
-		}
+	}
 	
 	//Controllo inserimento dati autenticazione
 	if (mysql_affected_rows() == -1) {
@@ -86,12 +107,13 @@
 		$response[] = array('campo'=>'output', 'valore'=>'Record non inserito');
 		echo json_encode($response);
 		die();
-		}
+	}
 	
 	mysql_close($db);
 	
 	// Invio risposta al client
 	$response[]= array('campo'=>'true', 'valore'=>$_POST['username']);
+
 	echo json_encode($response);
 	die();
 ?>
