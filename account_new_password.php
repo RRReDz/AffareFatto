@@ -111,20 +111,20 @@
             $row = mysql_fetch_array($query_result);
         }
 
-        $api_keys = include('api_keys.php');
+        $configs = include('configs.php');
 
         // Invio email con nuova password
         $mail = new PHPMailer;
         //$mail->SMTPDebug = 3;
         $mail->isSMTP();
-        $mail->Host = 'in-v3.mailjet.com';
-        $mail->SMTPAuth = true;
-        $mail->Username = $api_keys->mailjet_keys['username'];
-        $mail->Password = $api_keys->mailjet_keys['password'];
-        $mail->SMTPSecure = 'tls';
-        $mail->Port = 587;
+        $mail->Host = $configs->mailjet_configs['host'];
+        $mail->SMTPAuth = $configs->mailjet_configs['smtp_auth'];
+        $mail->SMTPSecure = $configs->mailjet_configs['smtp_secure'];
+        $mail->Username = $configs->mailjet_keys['username'];
+        $mail->Password = $configs->mailjet_keys['password'];
+        $mail->Port = $configs->mailjet_configs['port'];
         $mail->isHTML(true);
-        $mail->setFrom('riccardo.rossi@affarefatto.tk', 'Riccardo Rossi');
+        $mail->setFrom($configs->mailjet_configs['from'], $configs->mailjet_configs['from_name']);
         $mail->addAddress($row['EMail']);
 
         $mail->Subject = 'Affare Fatto recupero password';

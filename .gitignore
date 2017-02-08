@@ -3,4 +3,5 @@ vendor/
 
 \.idea/
 
-api_keys\.php
+
+configs\.php

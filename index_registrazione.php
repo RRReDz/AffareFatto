@@ -72,23 +72,20 @@ $chiave_email = md5(uniqid(rand(), true));
 $strSQL = "INSERT Autenticazione (IDUtente, NomeUtente, Password, Chiave_Conferma) VALUES (" . $utente['IDUtente'] . ", '" . trim($_POST['username']) . "', '" . $sha1_pass . "', '" . $chiave_email . "')";
 mysql_query($strSQL);
 
-$api_keys = include('api_keys.php');
+$configs = include('configs.php');
 
 $mail = new PHPMailer;
-
-//$mail->SMTPDebug = 3;                               		// Enable verbose debug output
-
-$mail->isSMTP();                                            // Set mailer to use SMTP
-$mail->Host = 'in-v3.mailjet.com';                        // Specify main and backup SMTP servers
-$mail->SMTPAuth = true;                                    // Enable SMTP authentication
-$mail->Username = $api_keys->mailjet_keys['username'];      // SMTP username
-$mail->Password = $api_keys->mailjet_keys['password'];      // SMTP password
-$mail->SMTPSecure = 'tls';                                    // Enable TLS encryption, `ssl` also accepted
-$mail->Port = 587;                                            // TCP port to connect to
-
+//$mail->SMTPDebug = 3;
+$mail->isSMTP();
+$mail->Host = $configs->mailjet_configs['host'];
+$mail->SMTPAuth = $configs->mailjet_configs['smtp_auth'];
+$mail->SMTPSecure = $configs->mailjet_configs['smtp_secure'];
+$mail->Username = $configs->mailjet_keys['username'];
+$mail->Password = $configs->mailjet_keys['password'];
+$mail->Port = $configs->mailjet_configs['port'];
 $mail->isHTML(true);
+$mail->setFrom($configs->mailjet_configs['from'], $configs->mailjet_configs['from_name']);
 
-$mail->setFrom('riccardo.rossi@affarefatto.tk', 'Riccardo Rossi');
 $mail->addAddress($_POST['email']);
 
 $mail->Subject = 'Affare Fatto conferma account';
