@@ -53,6 +53,8 @@
     </div>
 
     <?php
+    require __DIR__ . '/vendor/autoload.php';
+
     echo "<div class='container'><br> <a href='index.php'><-- Torna indietro</a></div>";
 
     if (!isset($_POST['chiave']) && !isset($_POST['user'])) {
@@ -105,16 +107,37 @@
             $strSQL = "UPDATE Autenticazione SET Password = '" . $sha1_pass . "' WHERE NomeUtente = '" . $_POST['chiave'] . "'";
             mysql_query($strSQL);
             $strSQL2 = "SELECT EMail FROM Utente U, Autenticazione A WHERE A.IDUtente = U.IDUtente AND NomeUtente = '" . $_POST['chiave'] . "'";
-            $query_result = mysql_query($strSQL);
+            $query_result = mysql_query($strSQL2);
             $row = mysql_fetch_array($query_result);
         }
 
+        $api_keys = include('api_keys.php');
+
         // Invio email con nuova password
-        $to = $row['EMail'];
-        $subject = "Affare Fatto recupero password";
-        $message = "La tua nuova password è: " . $password;
-        mail($to, $subject, $message);
-        echo "<div class='container'>Un e-mail con una nuova password è stata inviata<br>Sarai reindirizzato alla pagina principale in 5 secondi.</div>";
+        $mail = new PHPMailer;
+        //$mail->SMTPDebug = 3;
+        $mail->isSMTP();
+        $mail->Host = 'in-v3.mailjet.com';
+        $mail->SMTPAuth = true;
+        $mail->Username = $api_keys->mailjet_keys['username'];
+        $mail->Password = $api_keys->mailjet_keys['password'];
+        $mail->SMTPSecure = 'tls';
+        $mail->Port = 587;
+        $mail->isHTML(true);
+        $mail->setFrom('riccardo.rossi@affarefatto.tk', 'Riccardo Rossi');
+        $mail->addAddress($row['EMail']);
+
+        $mail->Subject = 'Affare Fatto recupero password';
+        $mail->Body = 'Recupero password di Affare fatto! <br><br> La tua nuova password &egrave;: ' . $password;
+
+        if (!$mail->send()) {
+            mysql_close($db);
+            $response[] = array('campo' => 'output', 'valore' => 'Errore nell\'invio della mail.');
+            echo json_encode($response);
+            die();
+        }
+
+        echo "<div class='container'>Un e-mail con una nuova password &egrave; stata inviata<br>Sarai reindirizzato alla pagina principale in 5 secondi.</div>";
         header('Refresh: 5; URL=index.php');
 
         mysql_close($db);
@@ -123,7 +146,7 @@
         // Apertura del database
         include 'db_connect.php';
 
-        $sha1_old_pass = sha1(utf8_encode($_POST['old_pass']));
+        $sha1_old_pass = sha1(utf8_encode(trim($_POST['old_pass'])));
         $strSQL = "SELECT * FROM Autenticazione WHERE NomeUtente = '" . $_POST['user'] . "' AND Password = '" . $sha1_old_pass . "'";
         $query_result = mysql_query($strSQL);
         // Se l'utente è presente
@@ -143,7 +166,7 @@
         } else
             die("Username o password errati.");
 
-        echo "<div class='container'>La password è stata modificata correttamente.<br>Sarai reindirizzato alla pagina principale in 5 secondi.</div>";
+        echo "<div class='container'>La password &egrave; stata modificata correttamente.<br>Sarai reindirizzato alla pagina principale in 5 secondi.</div>";
         header('Refresh: 5; URL=index.php');
 
         mysql_close($db);

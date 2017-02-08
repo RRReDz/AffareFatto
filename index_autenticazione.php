@@ -35,7 +35,7 @@ if (mysql_num_rows($query_result) == 0) {
 else {
     $dat = mysql_fetch_array($query_result);
     // Se la password corrisponde
-    if ($dat['Password'] == sha1(utf8_encode($_POST['pass']))) {
+    if ($dat['Password'] == sha1(utf8_encode(trim($_POST['pass'])))) {
         // Controllo se l'utente è già loggato
         /*$strSQL = "SELECT Sessione FROM Autenticazione WHERE NomeUtente ='".$_POST['nomeutente']."'";
         $query_result = mysql_query($strSQL);
