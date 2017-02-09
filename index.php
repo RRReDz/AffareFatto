@@ -6,6 +6,38 @@ else if (isset($_COOKIE['KLogIn'])) {
     $_SESSION['username'] = $_COOKIE['KLogIn'];
     header("Location:ricerca.php");
 }
+
+// PDO
+//Apertura database
+/*include 'db_connect.php';
+$query = "INSERT INTO visita (indirizzo_ip, data_visita) VALUES ('prova', 'prova')";
+$statement = $pdo->query("SELECT 'Hello, dear MySQL user!' AS _message FROM DUAL");
+$row = $statement->fetch(PDO::FETCH_ASSOC);
+echo htmlentities($row['_message']);*/
+
+include 'functions.php';
+//Apertura database
+include 'db_connect.php';
+
+$client_ip = get_client_ip();
+$timestamp = date("Y-m-d H:i:s");
+
+/* Debug */
+// echo "client_ip: " . $client_ip . ", timestamp: " . $timestamp;
+
+/* Query con PDO -> Da implementare */
+// $query = "INSERT INTO visita (indirizzo_ip, data_visita) VALUES ('$client_ip', '$timestamp')";
+// $statement = $db->query($query);
+
+//Apertura database
+include 'db_connect.php';
+
+$strSQL = "INSERT INTO visita (indirizzo_ip, data_visita) VALUES ('$client_ip','$timestamp')";
+$query_result = mysql_query($strSQL);
+
+//Chiusura database
+mysql_close($db);
+
 ?>
 
 <!DOCTYPE html>
