@@ -53,7 +53,7 @@ include 'session_check.php';
             <div id="prezzo">
                 <h5>Prezzo</h5>
                 <input type="text" name="prezzo" class="span2" placeholder="Prezzo" autocomplete="off">
-                <font size="5"><b>�</b></font><br>
+                &nbsp; <font size="5"><b>&euro;</b></font><br>
             </div>
             <br><br>
             <div id="telefono"><label class='checkbox'><input type="checkbox" name="telefono" value="1"> Mostra il
