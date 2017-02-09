@@ -100,7 +100,7 @@ include 'session_check.php';
                     <div id="prezzo">
                         <h5>Prezzo</h5>
                         <input type="text" name="prezzo" class="span2" placeholder="Prezzo" autocomplete="off">
-                        <font size="5"><b>�</b></font><br>
+                        <font size="5"><b> &euro; </b></font><br>
                     </div>
                 </div>
                 <div class="span3">
@@ -177,7 +177,7 @@ include 'session_check.php';
                         var code = "<tr><td rowspan='2' width='140' height='150'><a style='text-decoration: none' href=ricerca_showobject.php?objID=" + response[i].ID + "><img src='" + response[i].Immagine + "' class='img-rounded' style='max-height:150px'></a></td>";
                         code += "<td width='300' colspan='2'><b><a style='text-decoration: none' href=ricerca_showobject.php?objID=" + response[i].ID + ">" + response[i].Titolo + "</a></b></td>";
                         code += "<td width='100'>" + response[i].Categoria + "</div></td>";
-                        code += "<td width='50'>" + response[i].Prezzo + " �</div></td>";
+                        code += "<td width='50'>" + response[i].Prezzo + " &euro;</div></td>";
                         code += "<td align='center' width='20'><a href='#edit' data-id=" + response[i].ID + " class='open-edit btn' data-toggle='modal'><i class='icon-pencil'></i></a></td>";
                         code += "<td align='center' width='20'><a href='#delete' data-id=" + response[i].ID + " class='open-delete btn' data-toggle='modal'><i class='icon-trash'></i></a></td></tr>";
                         code += "<tr><td colspan='4'>" + response[i].Descrizione + "</td>";
