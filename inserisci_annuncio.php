@@ -97,7 +97,7 @@ include 'session_check.php';
 
     // Invio dati con Ajax (ANNUNCI)
     $(".alertModal").on('hide', function () {
-        window.location = "inserisci_annuncio.php";
+        window.location = "miei_annunci.php";
     });
 
     // Invio dati con Ajax (ANNUNCI)
